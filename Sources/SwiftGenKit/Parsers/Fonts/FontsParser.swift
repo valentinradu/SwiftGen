@@ -22,11 +22,15 @@ public enum Fonts {
     public static let defaultFilter = filterRegex(forExtensions: ["otf", "ttc", "ttf"])
 
     public func parse(path: Path, relativeTo parent: Path) throws {
-      guard let values = try? path.url.resourceValues(forKeys: [.typeIdentifierKey]),
-        let uti = values.typeIdentifier else {
+      guard let values = try? path.url.resourceValues(forKeys: [.typeIdentifierKey]) {
+          warningHandler?("Unable to read path for file \(path)", #file, #line)
+      }
+        
+      guard let uti = values.typeIdentifier else {
         warningHandler?("Unable to determine the Universal Type Identifier for file \(path)", #file, #line)
         return
       }
+      
       guard UTTypeConformsTo(uti as CFString, kUTTypeFont) else {
         warningHandler?("File is not a known font type: \(path)", #file, #line)
         return
